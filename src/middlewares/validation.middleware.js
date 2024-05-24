@@ -41,19 +41,8 @@ const signinUserSchema = joi.object({
   })
 });
 
-/* 로그아웃 유효성 검증*/
-
-const logoutUserSchema = joi.object({
-  refreshToken: joi.string().required().empty('')
-  .messages({
-    'any.required': '잘못된 크'
-  })
-});
-
 
 export {
   signupUserSchema,
   signinUserSchema,
-
-  logoutUserSchema,
 };

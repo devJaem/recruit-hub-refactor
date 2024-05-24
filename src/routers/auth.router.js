@@ -101,9 +101,9 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
       id: user.userId,
       role: user.userInfo.role 
     },
-    process.env.ACCESS_SECRET_KEY,
+    ENV_VALUE.ACCESS_KEY,
     {
-      expiresIn: process.env.ACCESS_EXPIRATION_TIME
+      expiresIn: ENV_VALUE.ACCESS_TIME
     }
   );
 
@@ -112,9 +112,9 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
       id: user.userId,
       role: user.userInfo.role 
     },
-    process.env.REFRESH_SECRET_KEY,
+    ENV_VALUE.REFRESH_KEY,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRATION_TIME
+      expiresIn: ENV_VALUE.REFRESH_TIME
     }
   );
 
