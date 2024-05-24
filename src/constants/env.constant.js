@@ -1,0 +1,12 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const ENV_VALUE = {
+  ACCESS_SECRET_KEY: process.env.SECRET_KEY,
+  ACCESS_TOKEN_EXPIRATION_TIME: process.env.ACCEESS_TOKEN_EXPIRATION_TIME,
+  JWT_EXPIRATION_TIME: process.env.JWT_EXPIRATION_TIME,
+  REFRESH_SECRET_KEY: process.env.REFRESH_TOKEN_EXPIRATION_TIME,
+  REFRESH_TOKEN_EXPIRATION_TIME: process.env.REFRESH_TOKEN_EXPIRATION_TIME,
+  PORT: process.env.PORT,
+  HASH_ROUND: process.env.HASH_ROUND
+};
