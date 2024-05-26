@@ -34,15 +34,18 @@ yarn run dev
 │   │   └── user.constant.js
 │   ├── middlewares
 │   │   ├── error-handler.middleware.js
+│   │   ├── log.middleware.js
 │   │   ├── require-access-token.middleware.js
 │   │   ├── require-refresh-token.middleware.js
-│   │   └── require-roles.middleware.js
+│   │   ├── require-roles.middleware.js
+│   │   └── validation.middleware.js
 │   ├── routers
 │   │   ├── auth.router.js
 │   │   ├── index.js
 │   │   ├── resumes.router.js
 │   │   └── users.router.js
 │   ├── utils
+│   │   ├── jwt.util.js
 │   │   └── prisma.util.js
 │   └── app.js
 ├── .env 
@@ -58,13 +61,15 @@ yarn run dev
     - **미들웨어(Middleware)**와 **라우터(Router)**를 등록하며, 서버를 시작하는 역할을 담당합니다.
 - `middlewares`
     - 미들웨어를 정의하기 위해 사용합니다.
-    - 에러 핸들러, 로깅, 사용자 인증과 같은 미들웨어를 이 폴더에서 관리합니다.
+    - 에러 핸들러, 로그, 토큰검증, 재발급을 처리하는 
+      미들웨어를 이 폴더에서 관리합니다.
+    - 입력값에 대한 유효성 검증 미들웨어를 관리합니다.
 - `routes`
     - Express.js의 **라우터(Router)**를 관리하기 위해 사용합니다.
     - 각 **API 경로를 정의**하며, 해당 경로에서 실행될 **함수를 관리**하는 역할을 담당합니다.
 - `utils`
     - Prisma 와 관련된 로그를 처리합니다.
-    
+    - jwt 를 분해해서 payload를 리턴합니다.
 #### API 명세
 ---
 https://devjeam.notion.site/Node-js-API-6024911b8cfb477cb106b290770cf9d4?pvs=4
