@@ -4,8 +4,9 @@ import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma.util.js';
 import {signupUserSchema, signinUserSchema} from '../middlewares/validation.middleware.js';
 import {catchError} from '../middlewares/error-handling.middleware.js';
-import {ENV_VALUE} from '../constants/env.constant.js';
+import {ENV} from '../constants/env.constant.js';
 import {AUTH_MESSAGES} from '../constants/auth.constant.js';
+import { USER_MESSAGES } from '../constants/user.constant.js';
 
 const authRouter = express.Router();
 
@@ -27,7 +28,7 @@ authRouter.post('/sign-up', catchError(async (req, res) => {
   if(user){
     return res.status(409).json({
       status: 409,
-      message: AUTH_MESSAGES.DUPLICATE_EMAIL
+      message: USER_MESSAGES.DUPLICATE_EMAIL
     });
   }
 
@@ -53,7 +54,7 @@ authRouter.post('/sign-up', catchError(async (req, res) => {
 
   res.status(201).json({
     status: 201,
-    message: AUTH_MESSAGES.SIGN_UP_SUCESS,
+    message: USER_MESSAGES.SIGN_UP_SUCESS,
     data: {
       id: userId,
       email: email,
@@ -101,9 +102,9 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
       id: user.userId,
       role: user.userInfo.role 
     },
-    ENV_VALUE.ACCESS_KEY,
+    ENV.ACCESS_KEY,
     {
-      expiresIn: ENV_VALUE.ACCESS_TIME
+      expiresIn: ENV.ACCESS_TIME
     }
   );
 
@@ -112,9 +113,9 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
       id: user.userId,
       role: user.userInfo.role 
     },
-    ENV_VALUE.REFRESH_KEY,
+    ENV.REFRESH_KEY,
     {
-      expiresIn: ENV_VALUE.REFRESH_TIME
+      expiresIn: ENV.REFRESH_TIME
     }
   );
 
@@ -129,7 +130,7 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
 
   return res.status(200).json({
     status: 200,
-    message: AUTH_MESSAGES.SIGN_IN_SUCESS,
+    message: USER_MESSAGES.SIGN_IN_SUCESS,
     accessToken,
     refreshToken
   });
