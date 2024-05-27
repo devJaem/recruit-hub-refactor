@@ -12,7 +12,10 @@ git clone https://github.com/devJaem/marketplace.git .
 yarn install
 ```
 
-3. .env 파일 생성하기 (https://github.com/devJaem/recruit-hub/blob/main/.env.example) 참고
+3. <br>
+```bash
+.env 파일 생성하기 (https://github.com/devJaem/recruit-hub/blob/main/.env.example) 참고
+```
 
 4. 서버 실행하기
 ```bash
