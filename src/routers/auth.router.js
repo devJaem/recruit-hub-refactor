@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma.util.js';
-import {signupUserSchema, signinUserSchema} from '../middlewares/validation.middleware.js';
+import {signupUserSchema, signinUserSchema} from '../middlewares/validations/sign.validation.middleware.js';
 import {catchError} from '../middlewares/error-handling.middleware.js';
 import {ENV} from '../constants/env.constant.js';
 import {AUTH_MESSAGES} from '../constants/auth.constant.js';
