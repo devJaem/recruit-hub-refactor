@@ -7,5 +7,9 @@ export const USER_MESSAGES = {
 
   SIGN_IN_SUCESS: '로그인에 성공했습니다.',
 
-  LOGOUT_SUCESS: '로그아웃 되었습니다.'
+  PROFILE_SUCESS: '조회에 성공했습니다.',
+
+  RENEW_TOKEN: '재발급에 성공했습니다.',
+
+  LOGOUT_SUCESS: '로그아웃 되었습니다.',
 };

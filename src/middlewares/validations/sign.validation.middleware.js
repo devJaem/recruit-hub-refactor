@@ -41,7 +41,6 @@ const signinUserSchema = joi.object({
   })
 });
 
-
 export {
   signupUserSchema,
   signinUserSchema,

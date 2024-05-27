@@ -2,138 +2,149 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma.util.js';
-import {signupUserSchema, signinUserSchema} from '../middlewares/validations/sign.validation.middleware.js';
-import {catchError} from '../middlewares/error-handling.middleware.js';
-import {ENV} from '../constants/env.constant.js';
-import {AUTH_MESSAGES} from '../constants/auth.constant.js';
+import {
+  signupUserSchema,
+  signinUserSchema,
+} from '../middlewares/validations/sign.validation.middleware.js';
+import { catchError } from '../middlewares/error-handling.middleware.js';
+import { ENV } from '../constants/env.constant.js';
+import { AUTH_MESSAGES } from '../constants/auth.constant.js';
 import { USER_MESSAGES } from '../constants/user.constant.js';
 
 const authRouter = express.Router();
 
 /* 회원가입 API */
-authRouter.post('/sign-up', catchError(async (req, res) => {
-  const createUser = req.body;
-  const {error} = signupUserSchema.validate(createUser);
+authRouter.post(
+  '/sign-up',
+  catchError(async (req, res) => {
+    const createUser = req.body;
+    const { error } = signupUserSchema.validate(createUser);
 
-  if(error){
-    return res.status(400).json({
-      status: 400,
-      message: error.message
-    });
-  }
-
-  const user = await prisma.user.findFirst({
-    where: {email: createUser.email}
-  });
-  if(user){
-    return res.status(409).json({
-      status: 409,
-      message: USER_MESSAGES.DUPLICATE_EMAIL
-    });
-  }
-
-  const hashPassword = await bcrypt.hash(createUser.password, parseInt(ENV_VALUE.HASH_ROUND));
-  const newUser = await prisma.user.create({
-    data: {
-      email: createUser.email,
-      password: hashPassword,
-      userInfo:{
-        create:{
-          name: createUser.name,
-          role: 'APPLICANT'
-        }
-      }
-    },
-    include:{
-      userInfo: true
+    if (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+      });
     }
-  });
 
-  const { userId, email, createdAt, updatedAt, userInfo } = newUser;
-  const { name, role } = userInfo;
-
-  res.status(201).json({
-    status: 201,
-    message: USER_MESSAGES.SIGN_UP_SUCESS,
-    data: {
-      id: userId,
-      email: email,
-      name: name,
-      role: role,
-      createdAt: createdAt,
-      updatedAt: updatedAt
+    const user = await prisma.user.findFirst({
+      where: { email: createUser.email },
+    });
+    if (user) {
+      return res.status(409).json({
+        status: 409,
+        message: USER_MESSAGES.DUPLICATE_EMAIL,
+      });
     }
-  });
 
-}));
+    const hashPassword = await bcrypt.hash(
+      createUser.password,
+      parseInt(ENV_VALUE.HASH_ROUND)
+    );
+    const newUser = await prisma.user.create({
+      data: {
+        email: createUser.email,
+        password: hashPassword,
+        userInfo: {
+          create: {
+            name: createUser.name,
+            role: 'APPLICANT',
+          },
+        },
+      },
+      include: {
+        userInfo: true,
+      },
+    });
+
+    const { userId, email, createdAt, updatedAt, userInfo } = newUser;
+    const { name, role } = userInfo;
+
+    res.status(201).json({
+      status: 201,
+      message: USER_MESSAGES.SIGN_UP_SUCESS,
+      data: {
+        id: userId,
+        email: email,
+        name: name,
+        role: role,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      },
+    });
+  })
+);
 
 /* 로그인 API */
-authRouter.post('/sign-in', catchError(async (req, res) => {
-  const loginUser = req.body;
-  const { error } = signinUserSchema.validate(loginUser);
+authRouter.post(
+  '/sign-in',
+  catchError(async (req, res) => {
+    const loginUser = req.body;
+    const { error } = signinUserSchema.validate(loginUser);
 
-  if (error) {
-    return res.status(400).json({
-      status: 400,
-      message: error.message
-    });
-  }
-  const user = await prisma.user.findFirst({
-    where: { email: loginUser.email },
-    include: { userInfo: true }
-  });
-  if (!user) {
-    return res.status(401).json({
-      status: 401,
-      message: AUTH_MESSAGES.INVALID_AUTH
-    });
-  }
-
-  const match = await bcrypt.compare(loginUser.password, user.password);
-  if (!match) {
-    return res.status(401).json({
-      status: 401,
-      message: AUTH_MESSAGES.INVALID_AUTH
-    });
-  }
-
-  const accessToken = jwt.sign(
-    {
-      userId: user.userId,
-      role: user.userInfo.role 
-    },
-    ENV.ACCESS_KEY,
-    {
-      expiresIn: ENV.ACCESS_TIME
+    if (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+      });
     }
-  );
-
-  const refreshToken = jwt.sign(
-    {
-      userId: user.userId,
-      role: user.userInfo.role 
-    },
-    ENV.REFRESH_KEY,
-    {
-      expiresIn: ENV.REFRESH_TIME
+    const user = await prisma.user.findFirst({
+      where: { email: loginUser.email },
+      include: { userInfo: true },
+    });
+    if (!user) {
+      return res.status(401).json({
+        status: 401,
+        message: AUTH_MESSAGES.INVALID_AUTH,
+      });
     }
-  );
 
-  await prisma.refreshToken.create({
-    data: {
-      userId: user.userId,
-      token: refreshToken
+    const match = await bcrypt.compare(loginUser.password, user.password);
+    if (!match) {
+      return res.status(401).json({
+        status: 401,
+        message: AUTH_MESSAGES.INVALID_AUTH,
+      });
     }
-  });
 
-  res.cookie('authorization', `Bearer ${accessToken}`);
+    const accessToken = jwt.sign(
+      {
+        userId: user.userId,
+        role: user.userInfo.role,
+      },
+      ENV.ACCESS_KEY,
+      {
+        expiresIn: ENV.ACCESS_TIME,
+      }
+    );
 
-  return res.status(200).json({
-    status: 200,
-    message: USER_MESSAGES.SIGN_IN_SUCESS,
-    accessToken: accessToken,
-    refreshToken: refreshToken
-  });
-}));
+    const refreshToken = jwt.sign(
+      {
+        userId: user.userId,
+        role: user.userInfo.role,
+      },
+      ENV.REFRESH_KEY,
+      {
+        expiresIn: ENV.REFRESH_TIME,
+      }
+    );
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.userId,
+        token: refreshToken,
+      },
+    });
+
+    res.cookie('authorization', `Bearer ${accessToken}`);
+
+    return res.status(200).json({
+      status: 200,
+      message: USER_MESSAGES.SIGN_IN_SUCESS,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
+  })
+);
 
 export default authRouter;

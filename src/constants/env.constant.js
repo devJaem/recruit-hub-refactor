@@ -7,5 +7,5 @@ export const ENV = {
   REFRESH_KEY: process.env.REFRESH_SECRET_KEY,
   REFRESH_TIME: process.env.REFRESH_TOKEN_EXPIRATION_TIME,
   PORT: process.env.PORT,
-  HASH_ROUND: process.env.HASH_ROUND
+  HASH_ROUND: process.env.HASH_ROUND,
 };
