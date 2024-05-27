@@ -99,7 +99,7 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
 
   const accessToken = jwt.sign(
     {
-      id: user.userId,
+      userId: user.userId,
       role: user.userInfo.role 
     },
     ENV.ACCESS_KEY,
@@ -110,7 +110,7 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
 
   const refreshToken = jwt.sign(
     {
-      id: user.userId,
+      userId: user.userId,
       role: user.userInfo.role 
     },
     ENV.REFRESH_KEY,
@@ -131,8 +131,8 @@ authRouter.post('/sign-in', catchError(async (req, res) => {
   return res.status(200).json({
     status: 200,
     message: USER_MESSAGES.SIGN_IN_SUCESS,
-    accessToken,
-    refreshToken
+    accessToken: accessToken,
+    refreshToken: refreshToken
   });
 }));
 

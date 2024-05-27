@@ -1,9 +1,9 @@
-import { prisma } from '../utils/prisma.util';
-import { ENV } from '../constants/env.constant';
-import { validateToken } from '../utils/jwt.util';
-import { USER_MESSAGES } from '../constants/user.constant';
-import { AUTH_MESSAGES } from '../constants/auth.constant';
-import { catchError } from './error-handling.middleware';
+import { prisma } from '../utils/prisma.util.js';
+import { ENV } from '../constants/env.constant.js';
+import { validateToken } from '../utils/jwt.util.js';
+import { USER_MESSAGES } from '../constants/user.constant.js';
+import { AUTH_MESSAGES } from '../constants/auth.constant.js';
+import { catchError } from './error-handling.middleware.js';
 
 /* accessToken 검증 미들웨어 */
 const accessMiddleware = catchError(async (req, res, next) =>{
@@ -38,7 +38,10 @@ const accessMiddleware = catchError(async (req, res, next) =>{
   }
   
   const user = await prisma.user.findUnique({
-    where: { userId: payload.userId }
+    where: { userId: payload.userId },
+    include: {
+      userInfo: true
+    }
   });
   if(!user) {
     return res.status(404).json({

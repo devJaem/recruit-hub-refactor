@@ -2,9 +2,8 @@ import { prisma } from '../utils/prisma.util.js';
 import { ENV } from '../constants/env.constant.js';
 import { validateToken } from '../utils/jwt.util.js';
 import { AUTH_MESSAGES } from '../constants/auth.constant.js';
-import { catchError } from './error-handling.middleware.js';
-import { validateToken } from './require-access-token.middleware.js';
 import { USER_MESSAGES } from '../constants/user.constant.js';
+import { catchError } from './error-handling.middleware.js';
 
 /* RefreshToken 검증, 재발급 미들웨어 */
 const refreshMiddleware = catchError(async (req, res, next) => {
