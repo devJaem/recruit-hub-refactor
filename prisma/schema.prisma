@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,6 +20,7 @@ model User {
   userInfo  UserInfo?
   resumes   Resume[]
   sessions  RefreshToken[]
+  resumeLogs ResumeLog[] @relation("RecruiterLogs")
 
   @@map("User")
 }
@@ -53,15 +51,16 @@ model RefreshToken {
 }
 
 model Resume {
-  resumeId  Int      @id @default(autoincrement())
-  userId    Int
-  title     String
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  resumeId     Int      @id @default(autoincrement())
+  userId       Int
+  title        String
+  content      String   @db.Text
+  resumeStatus String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  resumeLog ResumeLog[]
+  resumeLogs ResumeLog[]
 
   @@map("Resume")
 }
@@ -69,13 +68,14 @@ model Resume {
 model ResumeLog {
   resumeHistoryId Int      @id @default(autoincrement())
   resumeId        Int
-  resumeStatus    String
-  oldValue        String
-  newValue        String
-  reson           String
+  recruiterId     Int
+  oldStatus       String
+  newStatus       String
+  reason          String
   changedAt       DateTime @default(now())
 
   resume Resume @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade)
+  recruiter User @relation("RecruiterLogs", fields: [recruiterId], references: [userId], onDelete: Cascade)
 
   @@map("ResumeLog")
 }

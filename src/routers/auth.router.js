@@ -3,8 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma.util.js';
 import {
-  signupUserSchema,
-  signinUserSchema,
+  validateSignup,
+  validateSignin,
 } from '../middlewares/validations/sign.validation.middleware.js';
 import { catchError } from '../middlewares/error-handling.middleware.js';
 import { ENV } from '../constants/env.constant.js';
@@ -15,17 +15,9 @@ const authRouter = express.Router();
 
 /* 회원가입 API */
 authRouter.post(
-  '/sign-up',
+  '/sign-up', validateSignup,
   catchError(async (req, res) => {
     const createUser = req.body;
-    const { error } = signupUserSchema.validate(createUser);
-
-    if (error) {
-      return res.status(400).json({
-        status: 400,
-        message: error.message,
-      });
-    }
 
     const user = await prisma.user.findFirst({
       where: { email: createUser.email },
@@ -39,7 +31,7 @@ authRouter.post(
 
     const hashPassword = await bcrypt.hash(
       createUser.password,
-      parseInt(ENV_VALUE.HASH_ROUND)
+      parseInt(ENV.HASH_ROUND)
     );
     const newUser = await prisma.user.create({
       data: {
@@ -77,17 +69,10 @@ authRouter.post(
 
 /* 로그인 API */
 authRouter.post(
-  '/sign-in',
+  '/sign-in', validateSignin,
   catchError(async (req, res) => {
     const loginUser = req.body;
-    const { error } = signinUserSchema.validate(loginUser);
 
-    if (error) {
-      return res.status(400).json({
-        status: 400,
-        message: error.message,
-      });
-    }
     const user = await prisma.user.findFirst({
       where: { email: loginUser.email },
       include: { userInfo: true },
@@ -141,8 +126,10 @@ authRouter.post(
     return res.status(200).json({
       status: 200,
       message: USER_MESSAGES.SIGN_IN_SUCESS,
+      data:{
       accessToken: accessToken,
       refreshToken: refreshToken,
+      }
     });
   })
 );
