@@ -15,7 +15,8 @@ const authRouter = express.Router();
 
 /* 회원가입 API */
 authRouter.post(
-  '/sign-up', validateSignup,
+  '/sign-up',
+  validateSignup,
   catchError(async (req, res) => {
     const createUser = req.body;
 
@@ -69,7 +70,8 @@ authRouter.post(
 
 /* 로그인 API */
 authRouter.post(
-  '/sign-in', validateSignin,
+  '/sign-in',
+  validateSignin,
   catchError(async (req, res) => {
     const loginUser = req.body;
 
@@ -126,10 +128,10 @@ authRouter.post(
     return res.status(200).json({
       status: 200,
       message: USER_MESSAGES.SIGN_IN_SUCESS,
-      data:{
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      }
+      data: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      },
     });
   })
 );

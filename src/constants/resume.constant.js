@@ -16,5 +16,5 @@ export const RESUME_MESSAGES = {
 
   LOGS_FETCH_SUCCESS: '로그 조회에 성공 하였습니다.',
 
-  RESUME_STATUS_UPDATE_SUCCESS: '지원 상태가 변경 되었습니다.'
+  RESUME_STATUS_UPDATE_SUCCESS: '지원 상태가 변경 되었습니다.',
 };

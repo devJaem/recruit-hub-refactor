@@ -89,9 +89,9 @@ userRouter.get(
     return res.status(200).json({
       status: 200,
       message: USER_MESSAGES.LOGOUT_SUCESS,
-      data: { 
-        userId:userId, 
-      }
+      data: {
+        userId: userId,
+      },
     });
   })
 );

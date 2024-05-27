@@ -22,32 +22,33 @@ yarn run dev
 #### 폴더구조
 ---
 ```
-.
 ├── node_modules
 ├── prisma
-│   └── schema.prisma
+│   └── schema.prisma
 ├── src
-│   ├── constants
-│   │   ├── auth.constant.js
-│   │   ├── env.constant.js
-│   │   ├── resume.constant.js
-│   │   └── user.constant.js
-│   ├── middlewares
-│   │   ├── error-handler.middleware.js
-│   │   ├── log.middleware.js
-│   │   ├── require-access-token.middleware.js
-│   │   ├── require-refresh-token.middleware.js
-│   │   ├── require-roles.middleware.js
-│   │   └── validation.middleware.js
-│   ├── routers
-│   │   ├── auth.router.js
-│   │   ├── index.js
-│   │   ├── resumes.router.js
-│   │   └── users.router.js
-│   ├── utils
-│   │   ├── jwt.util.js
-│   │   └── prisma.util.js
-│   └── app.js
+│   ├── constants
+│   │   ├── auth.constant.js
+│   │   ├── env.constant.js
+│   │   ├── resume.constant.js
+│   │   └── user.constant.js
+│   ├── middlewares
+│   │   ├── error-handling.middleware.js
+│   │   ├── log.middleware.js
+│   │   ├── require-access-token.middleware.js
+│   │   ├── require-refresh-token.middleware.js
+│   │   ├── require-roles.middleware.js
+│   │   └── validations
+│   │       ├── resume.validtation.middleware.js
+│   │       └── sign.validation.middleware.js
+│   ├── routers
+│   │   ├── auth.router.js
+│   │   ├── index.js
+│   │   ├── resume.router.js
+│   │   └── user.router.js
+│   ├── utils
+│   │   ├── jwt.util.js
+│   │   └── prisma.util.js
+│   └── app.js
 ├── .env 
 ├── .env.example 
 ├── .gitignore
