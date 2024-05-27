@@ -9,7 +9,7 @@ import { USER_MESSAGES } from '../constants/user.constant.js';
 
 const userRouter = express.Router();
 
-/* 사용자 정보 조회 */
+/* 사용자 정보 조회 API */
 userRouter.get(
   '/profile',
   accessMiddleware,
@@ -30,7 +30,7 @@ userRouter.get(
   })
 );
 
-/* RefreshToken 재발급*/
+/* RefreshToken 재발급 API*/
 userRouter.post(
   '/token',
   refreshMiddleware,
@@ -73,7 +73,7 @@ userRouter.post(
   })
 );
 
-/* 로그아웃 */
+/* 로그아웃 API*/
 userRouter.get(
   '/logout',
   accessMiddleware,

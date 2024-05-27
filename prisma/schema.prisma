@@ -61,20 +61,21 @@ model Resume {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  resumeHistory ResumeHistory[]
+  resumeLog ResumeLog[]
 
   @@map("Resume")
 }
 
-model ResumeHistory {
+model ResumeLog {
   resumeHistoryId Int      @id @default(autoincrement())
   resumeId        Int
-  changedField    String
+  resumeStatus    String
   oldValue        String
   newValue        String
+  reson           String
   changedAt       DateTime @default(now())
 
   resume Resume @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade)
 
-  @@map("ResumeHistory")
+  @@map("ResumeLog")
 }
