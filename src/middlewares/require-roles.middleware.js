@@ -2,8 +2,8 @@ import { RESUME_MESSAGES } from '../constants/resume.constant.js';
 
 const requireRoles = (roles) => {
   return (req, res, next) => {
-    const userRoles = req.user.userInfo.role;
-    const allowed = roles.includes(userRoles);
+    const userRole = req.user.userInfo.role;
+    const allowed = roles.includes(userRole);
 
     if (!allowed) {
       return res.status(403).json({

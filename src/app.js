@@ -2,14 +2,14 @@ import express from 'express';
 import { ENV } from './constants/env.constant.js';
 import { errorHandler } from './middlewares/error-handling.middleware.js';
 import logMiddleware from './middlewares/log.middleware.js';
-import index from './routers/index.js';
+import router from './routers/index.js';
 
 const app = express();
 const PORT = ENV.PORT;
 
 app.use(logMiddleware);
 app.use(express.json());
-app.use('/api/v1',[index]);
+app.use('/api/v1',[router]);
 app.use(errorHandler);
 
 app.get('/', async (req, res) => {

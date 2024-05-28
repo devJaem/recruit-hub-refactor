@@ -22,7 +22,7 @@ resumeRouter.post(
     const resumeData = req.body;
 
     const result = await prisma.$transaction(async (tr) => {
-      const newResume = await prisma.resume.create({
+      const newResume = await tr.resume.create({
         data: {
           userId: userId,
           title: resumeData.title,
@@ -31,7 +31,7 @@ resumeRouter.post(
         },
       });
 
-      await prisma.resumeLog.create({
+      await tr.resumeLog.create({
         data: {
           resumeId: newResume.resumeId,
           recruiterId: userId,
@@ -281,12 +281,13 @@ resumeRouter.patch(
     }
 
     // Transaction으로 이력서 상태 업데이트 및 로그 생성
-    const [updatedResume, resumeLog] = await prisma.$transaction([
-      prisma.resume.update({
+    const result = await prisma.$transaction(async (tr) => {
+      const updatedResume = await tr.resume.update({
         where: { resumeId: parseInt(resumeId) },
         data: { resumeStatus },
-      }),
-      prisma.resumeLog.create({
+      });
+
+      const resumeLog = await tr.resumeLog.create({
         data: {
           resumeId: parseInt(resumeId),
           recruiterId: userId,
@@ -295,8 +296,12 @@ resumeRouter.patch(
           reason,
           changedAt: new Date(),
         },
-      }),
-    ]);
+      });
+
+      return { updatedResume, resumeLog };
+    });
+
+    const { updatedResume, resumeLog } = result;
 
     return res.status(200).json({
       status: 200,

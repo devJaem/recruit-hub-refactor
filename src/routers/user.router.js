@@ -55,13 +55,20 @@ userRouter.post(
       { expiresIn: ENV.REFRESH_TIME }
     );
 
-    await prisma.refreshToken.updateMany({
-      where: {
-        userId: userId,
-      },
-      data: {
-        token: refreshToken,
-      },
+    // 트랜잭션으로 기존 리프래시 토큰을 삭제하고 새로운 토큰을 생성
+    await prisma.$transaction(async (tr) => {
+      await tr.refreshToken.deleteMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      await tr.refreshToken.create({
+        data: {
+          userId: userId,
+          token: refreshToken,
+        },
+      });
     });
 
     return res.status(200).json({

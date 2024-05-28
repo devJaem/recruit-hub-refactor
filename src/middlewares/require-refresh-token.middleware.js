@@ -23,16 +23,11 @@ const refreshMiddleware = catchError(async (req, res, next) => {
     });
   }
 
-  const payload = await validateToken(token, ENV.REFRESH_KEY);
-  if (payload === 'expired') {
+  const { payload, error } = await validateToken(token, ENV.REFRESH_KEY);
+  if (error) {
     return res.status(401).json({
       status: 401,
-      message: AUTH_MESSAGES.TOKEN_EXPIRED,
-    });
-  } else if (payload === 'JsonWebTokenError') {
-    return res.status(401).json({
-      status: 401,
-      message: AUTH_MESSAGES.INVALID_AUTH,
+      message: error,
     });
   }
 
