@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,58 +11,73 @@ datasource db {
 }
 
 model User {
-  id             Int           @id @default(autoincrement())
-  email          String        @unique
-  password       String        
-  nickname       String       
-  role           Role          @default(APPLICANT)
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  resumes        Resume[]
-  recruiterLogs  ResumeLog[]   @relation("Recruiter")
-  refreshToken   RefreshToken? @relation("UserRefreshToken")
+  userId    Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("user")
+  userInfo  UserInfo?
+  resumes   Resume[]
+  sessions  RefreshToken[]
+  resumeLogs ResumeLog[] @relation("RecruiterLogs")
+
+  @@map("User")
 }
 
-model Resume {
-  id             Int           @id @default(autoincrement())
-  userId         Int           @map("user_id")
-  title          String       
-  content        String       
-  applyStatus    ApplyStatus   @default(APPLY) @map("apply_status")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  user           User          @relation(fields: [userId], references: [id])
-  resumeLogs     ResumeLog[]
+model UserInfo {
+  userInfosId Int      @id @default(autoincrement())
+  userId      Int      @unique
+  name        String
+  role        Role     @default(APPLICANT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@map("resume")
-}
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-model ResumeLog {
-  id                 Int         @id @default(autoincrement())
-  resumeId           Int         @map("resume_id")
-  recruiterId        Int         @map("recruiter_id")
-  oldApplyStatus     ApplyStatus @map("old_apply_status")
-  newApplyStatus     ApplyStatus @map("new_apply_status")
-  reason             String      
-  createdAt          DateTime    @default(now()) @map("created_at")
-  updatedAt          DateTime    @updatedAt @map("updated_at")
-  resume             Resume      @relation(fields: [resumeId], references: [id])
-  recruiter          User        @relation("Recruiter", fields: [recruiterId], references: [id])
-
-  @@map("resume_log")
+  @@map("UserInfos")
 }
 
 model RefreshToken {
-  id           Int      @id @default(autoincrement())
-  refreshToken String   @map("refresh_token") 
-  userId       Int      @unique @map("user_id")
-  user         User     @relation("UserRefreshToken", fields: [userId], references: [id])
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  tokenId   Int      @id @default(autoincrement())
+  userId    Int
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("refresh_token")
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("RefreshTokens")
+}
+
+model Resume {
+  resumeId     Int      @id @default(autoincrement())
+  userId       Int
+  title        String
+  content      String   @db.Text
+  resumeStatus ApplyStatus @default(APPLY)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  resumeLogs ResumeLog[]
+
+  @@map("Resume")
+}
+
+model ResumeLog {
+  resumeHistoryId Int      @id @default(autoincrement())
+  resumeId        Int
+  recruiterId     Int
+  oldStatus       String
+  newStatus       String
+  reason          String
+  changedAt       DateTime @default(now())
+
+  resume Resume @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade)
+  recruiter User @relation("RecruiterLogs", fields: [recruiterId], references: [userId], onDelete: Cascade)
+
+  @@map("ResumeLog")
 }
 
 enum Role {
