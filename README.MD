@@ -1,5 +1,5 @@
 # 내배캠 NodeJS_5기 정재민
-### 채용 사이트 백엔드 만들기
+### 채용 사이트 백엔드 리팩토링하기
 ---
 ### Setting
 1. 코드 복사하기
@@ -25,6 +25,21 @@ yarn run dev
 #### 폴더구조
 ---
 ```
+├── __tests__
+│   ├── dummies
+│   │   ├── resumes.dummy.js
+│   │   └── users.dummy.js
+│   └── unit
+│       ├── controllers
+│       │   ├── auth.controller.unit.spec.js
+│       │   ├── resumes.controller.unit.spec.js
+│       │   └── users.controller.unit.spec.js
+│       ├── repositories
+│       │   ├── resumes.repository.unit.spec.js
+│       │   └── users.repository.unit.spec.js
+│       └── services
+│           ├── auth.service.unit.spec.js
+│           └── resumes.service.unit.spec.js
 ├── node_modules
 ├── prisma
 │   └── schema.prisma
@@ -34,6 +49,12 @@ yarn run dev
 │   │   ├── env.constant.js
 │   │   ├── resume.constant.js
 │   │   └── user.constant.js
+│   ├── controllers
+│   │   ├── auth.controller.js
+│   │   ├── resumes.controller.js
+│   │   └── users.controller.js
+│   ├── errors
+│   │   └── http.error.js
 │   ├── middlewares
 │   │   ├── error-handling.middleware.js
 │   │   ├── log.middleware.js
@@ -43,11 +64,17 @@ yarn run dev
 │   │   └── validations
 │   │       ├── resume.validtation.middleware.js
 │   │       └── sign.validation.middleware.js
+│   ├── repositories
+│   │   ├── resumes.repository.js
+│   │   └── users.repository.js
 │   ├── routers
 │   │   ├── auth.router.js
 │   │   ├── index.js
 │   │   ├── resume.router.js
 │   │   └── user.router.js
+│   ├── services
+│   │   ├── auth.service.js
+│   │   └── resumes.service.js
 │   ├── utils
 │   │   ├── jwt.util.js
 │   │   └── prisma.util.js
