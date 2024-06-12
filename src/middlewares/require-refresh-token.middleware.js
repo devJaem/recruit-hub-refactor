@@ -1,11 +1,10 @@
-import bcrypt from 'bcrypt';
 import { validateToken } from './require-access-token.middleware.js';
 import { ENV } from '../constants/env.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../errors/http.error.js';
 
 /** RefreshToken 토큰 검증 및 재발급 미들웨어 **/
-const refreshMiddleware = (userRepository) => async (req, res, next) => {
+const refreshMiddleware = (authRepository, userRepository) => async (req, res, next) => {
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
@@ -18,19 +17,9 @@ const refreshMiddleware = (userRepository) => async (req, res, next) => {
     }
 
     const payload = await validateToken(token, ENV.REFRESH_KEY);
-    if (payload === 'expired') {
-      throw new UnauthorizedError(MESSAGES.AUTH.COMMON.JWT.EXPIRED);
-    } else if (payload === 'JsonWebTokenError') {
-      throw new UnauthorizedError(MESSAGES.AUTH.COMMON.JWT.INVALID);
-    }
 
-    const tokenData = await userRepository.findRefreshTokenByUserId(payload.userId);
-    if (!tokenData) {
-      throw new BadRequestError(MESSAGES.AUTH.COMMON.JWT.DISCARDED_TOKEN);
-    }
-
-    const isValid = bcrypt.compareSync(token, tokenData.token);
-    if (!isValid) {
+    const tokenData = await authRepository.findRefreshTokenByUserId(payload.userId);
+    if (!tokenData || tokenData.token !== token) {
       throw new BadRequestError(MESSAGES.AUTH.COMMON.JWT.DISCARDED_TOKEN);
     }
 

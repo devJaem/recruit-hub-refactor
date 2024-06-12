@@ -1,13 +1,14 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ENV } from '../constants/env.constant.js';
+import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN, HASH_SALT_ROUNDS } from '../constants/auth.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { UnauthorizedError, ConflictError } from '../errors/http.error.js';
 
 class AuthService {
-  constructor(userRepository, authRepository) {
-    this.userRepository = userRepository;
+  constructor(authRepository, userRepository) {
     this.authRepository = authRepository;
+    this.userRepository = userRepository;
   }
 
   signUp = async (createUser) => {
@@ -16,7 +17,7 @@ class AuthService {
       throw new ConflictError(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
     }
 
-    const hashPassword = await bcrypt.hash(createUser.password, parseInt(ENV.HASH_ROUND));
+    const hashPassword = await bcrypt.hash(createUser.password, parseInt(HASH_SALT_ROUNDS));
     const newUser = await this.userRepository.createUser(createUser.email, hashPassword, createUser.name);
 
     const { userId, email, createdAt, updatedAt, userInfo } = newUser;
@@ -50,7 +51,7 @@ class AuthService {
       },
       ENV.ACCESS_KEY,
       {
-        expiresIn: ENV.ACCESS_TIME,
+        expiresIn: ACCESS_TOKEN_EXPIRES_IN,
       }
     );
 
@@ -61,7 +62,7 @@ class AuthService {
       },
       ENV.REFRESH_KEY,
       {
-        expiresIn: ENV.REFRESH_TIME,
+        expiresIn: REFRESH_TOKEN_EXPIRES_IN,
       }
     );
 

@@ -68,15 +68,19 @@ class ResumeService {
 
   async deleteResume(userId, resumeId) {
     const existing = await this.resumeRepository.getResumeDetail(resumeId);
-    if (!existing || existing.userId !== userId) {
+    if (!existing) {
       throw new NotFoundError(MESSAGES.RESUMES.COMMON.NOT_FOUND);
     }
-    if (existing.resumeStatus !== 'apply') {
+    if (existing.userId !== userId) {
+      throw new BadRequestError(MESSAGES.AUTH.COMMON.FORBIDDEN);
+    }
+    if (existing.resumeStatus !== 'APPLY') {  // 'APPLY'로 수정
       throw new BadRequestError(MESSAGES.RESUMES.DELETE.RECRUITER_RESULT_PUBLISHED_DELETE_DENIED);
     }
     const deletedResume = await this.resumeRepository.deleteResume(resumeId);
     return { resumeId: deletedResume.resumeId };
   }
+
 
   async updateResumeStatus(userId, resumeId, resumeStatus, reason) {
     const existing = await this.resumeRepository.getResumeDetail(resumeId);

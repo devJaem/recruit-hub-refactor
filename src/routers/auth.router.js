@@ -10,7 +10,7 @@ import { prisma } from '../utils/prisma.util.js';
 const authRouter = express.Router();
 const userRepository = new UserRepository(prisma);
 const authRepository = new AuthRepository(prisma);
-const authService = new AuthService(userRepository, authRepository);
+const authService = new AuthService(authRepository, userRepository);
 const authController = new AuthController(authService);
 
 /* 회원가입 API */

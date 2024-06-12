@@ -6,47 +6,18 @@ class UserRepository {
   findById = async (userId) => {
     return await this.prisma.user.findUnique({
       where: { userId: userId },
+      include:{
+        userInfo: true,
+      },
     });
-  };
-
-  findRefreshTokenByUserId = async (userId) => {
-    return await this.prisma.refreshToken.findFirst({
-      where: { userId },
-    });
-  };
-
-  updateOrCreateToken = async (userId, token) => {
-    const existingToken = await this.prisma.refreshToken.findFirst({
-      where: { userId },
-    });
-    if (existingToken) {
-      return await this.prisma.refreshToken.update({
-        where: { tokenId: existingToken.tokenId },
-        data: { token },
-      });
-    } else {
-      return await this.prisma.refreshToken.create({
-        data: { userId, token },
-      });
-    }
-  };
-
-  deleteTokenByUserId = async (userId) => {
-    const existingToken = await this.prisma.refreshToken.findFirst({
-      where: { userId },
-    });
-    if (existingToken) {
-      await this.prisma.refreshToken.delete({
-        where: { tokenId: existingToken.tokenId },
-      });
-      return { tokenId: existingToken.tokenId };
-    }
-    return null;
   };
 
   findOne = async (email) => {
     return await this.prisma.user.findFirst({
       where: { email },
+      include: {
+        userInfo: true,
+      },
     });
   };
 
@@ -58,18 +29,13 @@ class UserRepository {
         userInfo: {
           create: {
             name,
-            role: "APPLICANT", // 기본 역할을 APPLICANT로 설정
+            role: "APPLICANT",
           },
         },
       },
-    });
-  };
-
-  updateToken = async (userId, token) => {
-    return await this.prisma.refreshToken.upsert({
-      where: { userId: userId },
-      update: { token },
-      create: { userId, token },
+      include: {
+        userInfo: true,
+      },
     });
   };
 }

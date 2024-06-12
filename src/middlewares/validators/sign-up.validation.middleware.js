@@ -32,7 +32,7 @@ export const userCreateSchema = async(req, res, next) => {
           'any.required': MESSAGES.AUTH.COMMON.PASSWORD_CONFIRM.REQURIED,
         }),
 
-        nickname: Joi.string().required().empty('').messages({
+        name: Joi.string().required().empty('').messages({
           'any.required': MESSAGES.AUTH.COMMON.NAME.REQURIED,
         }),
     });

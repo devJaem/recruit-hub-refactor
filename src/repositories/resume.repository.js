@@ -9,7 +9,7 @@ class ResumeRepository {
         userId: userId,
         title: resumeData.title,
         content: resumeData.content,
-        resumeStatus: 'apply',
+        resumeStatus: 'APPLY',
       },
     });
   }
