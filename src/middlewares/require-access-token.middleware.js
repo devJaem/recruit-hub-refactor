@@ -1,7 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { ENV } from '../constants/env.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
-import { BadRequestError, UnauthorizedError, NotFoundError } from '../errors/http.error.js';
+import {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+} from '../errors/http.error.js';
 
 const validateToken = async (token, secretKey) => {
   try {
@@ -42,7 +46,7 @@ const authMiddleware = (userRepository) => async (req, res, next) => {
     }
     req.user = {
       ...user,
-      role: payload.role, // 추가된 역할 정보
+      role: payload.role,
     };
 
     next();

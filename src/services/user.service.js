@@ -1,8 +1,15 @@
 import jwt from 'jsonwebtoken';
 import { ENV } from '../constants/env.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
-import { NotFoundError, UnauthorizedError, BadRequestError } from '../errors/http.error.js';
-import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from '../constants/auth.constant.js';
+import {
+  NotFoundError,
+  UnauthorizedError,
+  BadRequestError,
+} from '../errors/http.error.js';
+import {
+  ACCESS_TOKEN_EXPIRES_IN,
+  REFRESH_TOKEN_EXPIRES_IN,
+} from '../constants/auth.constant.js';
 
 class UserService {
   constructor(userRepository, authRepository) {

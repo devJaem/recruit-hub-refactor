@@ -1,5 +1,9 @@
 import { MESSAGES } from '../constants/message.constant.js';
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors/http.error.js';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../errors/http.error.js';
 
 class ResumeService {
   constructor(resumeRepository) {
@@ -7,8 +11,17 @@ class ResumeService {
   }
 
   async createResume(userId, resumeData) {
-    const newResume = await this.resumeRepository.createResume(userId, resumeData);
-    await this.resumeRepository.createResumeLog(newResume.resumeId, userId, '', 'apply', 'Created resume');
+    const newResume = await this.resumeRepository.createResume(
+      userId,
+      resumeData
+    );
+    await this.resumeRepository.createResumeLog(
+      newResume.resumeId,
+      userId,
+      '',
+      'apply',
+      'Created resume'
+    );
     return newResume;
   }
 
@@ -17,7 +30,11 @@ class ResumeService {
     if (status) {
       whereClause.resumeStatus = status;
     }
-    const resumes = await this.resumeRepository.getAllResumes(whereClause, sortBy, order);
+    const resumes = await this.resumeRepository.getAllResumes(
+      whereClause,
+      sortBy,
+      order
+    );
     return resumes.map((resume) => ({
       resumeId: resume.resumeId,
       name: resume.user.userInfo.name,
@@ -53,7 +70,10 @@ class ResumeService {
     if (!existing || existing.userId !== userId) {
       throw new NotFoundError(MESSAGES.RESUMES.COMMON.NOT_FOUND);
     }
-    const updatedResume = await this.resumeRepository.updateResume(resumeId, resumeData);
+    const updatedResume = await this.resumeRepository.updateResume(
+      resumeId,
+      resumeData
+    );
     return {
       resumeId: updatedResume.resumeId,
       userId: updatedResume.userId,
@@ -74,21 +94,31 @@ class ResumeService {
     if (existing.userId !== userId) {
       throw new BadRequestError(MESSAGES.AUTH.COMMON.FORBIDDEN);
     }
-    if (existing.resumeStatus !== 'APPLY') {  // 'APPLY'로 수정
-      throw new BadRequestError(MESSAGES.RESUMES.DELETE.RECRUITER_RESULT_PUBLISHED_DELETE_DENIED);
+    if (existing.resumeStatus !== 'APPLY') {
+      // 'APPLY'로 수정
+      throw new BadRequestError(
+        MESSAGES.RESUMES.DELETE.RECRUITER_RESULT_PUBLISHED_DELETE_DENIED
+      );
     }
     const deletedResume = await this.resumeRepository.deleteResume(resumeId);
     return { resumeId: deletedResume.resumeId };
   }
-
 
   async updateResumeStatus(userId, resumeId, resumeStatus, reason) {
     const existing = await this.resumeRepository.getResumeDetail(resumeId);
     if (!existing) {
       throw new NotFoundError(MESSAGES.RESUMES.COMMON.NOT_FOUND);
     }
-    const updatedResume = await this.resumeRepository.updateResume(resumeId, { resumeStatus });
-    const resumeLog = await this.resumeRepository.createResumeLog(resumeId, userId, existing.resumeStatus, resumeStatus, reason);
+    const updatedResume = await this.resumeRepository.updateResume(resumeId, {
+      resumeStatus,
+    });
+    const resumeLog = await this.resumeRepository.createResumeLog(
+      resumeId,
+      userId,
+      existing.resumeStatus,
+      resumeStatus,
+      reason
+    );
     return { updatedResume, resumeLog };
   }
 

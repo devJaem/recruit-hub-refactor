@@ -6,7 +6,7 @@ class UserRepository {
   findById = async (userId) => {
     return await this.prisma.user.findUnique({
       where: { userId: userId },
-      include:{
+      include: {
         userInfo: true,
       },
     });
@@ -29,7 +29,7 @@ class UserRepository {
         userInfo: {
           create: {
             name,
-            role: "APPLICANT",
+            role: 'APPLICANT',
           },
         },
       },

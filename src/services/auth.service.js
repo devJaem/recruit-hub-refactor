@@ -1,7 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ENV } from '../constants/env.constant.js';
-import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN, HASH_SALT_ROUNDS } from '../constants/auth.constant.js';
+import {
+  ACCESS_TOKEN_EXPIRES_IN,
+  REFRESH_TOKEN_EXPIRES_IN,
+  HASH_SALT_ROUNDS,
+} from '../constants/auth.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { UnauthorizedError, ConflictError } from '../errors/http.error.js';
 
@@ -17,8 +21,15 @@ class AuthService {
       throw new ConflictError(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
     }
 
-    const hashPassword = await bcrypt.hash(createUser.password, parseInt(HASH_SALT_ROUNDS));
-    const newUser = await this.userRepository.createUser(createUser.email, hashPassword, createUser.name);
+    const hashPassword = await bcrypt.hash(
+      createUser.password,
+      parseInt(HASH_SALT_ROUNDS)
+    );
+    const newUser = await this.userRepository.createUser(
+      createUser.email,
+      hashPassword,
+      createUser.name
+    );
 
     const { userId, email, createdAt, updatedAt, userInfo } = newUser;
     const { name, role } = userInfo;

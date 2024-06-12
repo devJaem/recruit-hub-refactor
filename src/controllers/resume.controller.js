@@ -25,7 +25,13 @@ class ResumeController {
     try {
       const { userId, userInfo } = req.user;
       let { sortBy = 'createdAt', order = 'desc', status } = req.query;
-      const resumes = await this.resumeService.getAllResumes(userId, userInfo, sortBy, order, status);
+      const resumes = await this.resumeService.getAllResumes(
+        userId,
+        userInfo,
+        sortBy,
+        order,
+        status
+      );
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.RESUMES.READ_LIST.SUCCEED,
@@ -40,7 +46,11 @@ class ResumeController {
     try {
       const { userId, userInfo } = req.user;
       const { resumeId } = req.params;
-      const resume = await this.resumeService.getResumeDetail(userId, userInfo, resumeId);
+      const resume = await this.resumeService.getResumeDetail(
+        userId,
+        userInfo,
+        resumeId
+      );
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.RESUMES.READ_DETAIL.SUCCEED,
@@ -56,7 +66,11 @@ class ResumeController {
       const resumeData = req.body;
       const { userId } = req.user;
       const { resumeId } = req.params;
-      const updatedResume = await this.resumeService.updateResume(userId, resumeId, resumeData);
+      const updatedResume = await this.resumeService.updateResume(
+        userId,
+        resumeId,
+        resumeData
+      );
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.RESUMES.UPDATE.SUCCEED,
@@ -87,7 +101,12 @@ class ResumeController {
       const { userId } = req.user;
       const { resumeId } = req.params;
       const { resumeStatus, reason } = req.body;
-      const result = await this.resumeService.updateResumeStatus(userId, resumeId, resumeStatus, reason);
+      const result = await this.resumeService.updateResumeStatus(
+        userId,
+        resumeId,
+        resumeStatus,
+        reason
+      );
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,

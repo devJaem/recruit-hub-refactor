@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "../constants/http-status.constant.js";
+import { HTTP_STATUS } from '../constants/http-status.constant.js';
 class HttpError extends Error {
   constructor(statusCode, message) {
     super(message);
@@ -51,5 +51,5 @@ export {
   ForbiddenError,
   NotFoundError,
   ConflictError,
-  InternalServerError
+  InternalServerError,
 };

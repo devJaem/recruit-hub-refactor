@@ -1,5 +1,5 @@
 import express from 'express';
-import { userCreateSchema } from '../middlewares/validators/sign-up.validation.middleware.js'
+import { userCreateSchema } from '../middlewares/validators/sign-up.validation.middleware.js';
 import { userLoginSchema } from '../middlewares/validators/sign-in.validation.middleware.js';
 import AuthController from '../controllers/auth.controller.js';
 import AuthService from '../services/auth.service.js';
