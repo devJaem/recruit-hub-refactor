@@ -40,7 +40,11 @@ const authMiddleware = (userRepository) => async (req, res, next) => {
     if (!user) {
       throw new NotFoundError(MESSAGES.AUTH.COMMON.JWT.NO_USER);
     }
-    req.user = user;
+    req.user = {
+      ...user,
+      role: payload.role, // 추가된 역할 정보
+    };
+
     next();
   } catch (error) {
     next(error);

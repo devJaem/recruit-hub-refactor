@@ -17,7 +17,7 @@ class ResumeRepository {
   async createResumeLog(resumeId, recruiterId, oldStatus, newStatus, reason) {
     return await this.prisma.resumeLog.create({
       data: {
-        resumeId: resumeId,
+        resumeId: parseInt(resumeId),
         recruiterId: recruiterId,
         oldStatus: oldStatus,
         newStatus: newStatus,
