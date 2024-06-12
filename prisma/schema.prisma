@@ -26,7 +26,7 @@ model User {
 }
 
 model UserInfo {
-  userInfosId Int      @id @default(autoincrement())
+  userInfoId Int      @id @default(autoincrement())
   userId      Int      @unique
   name        String
   role        Role     @default(APPLICANT)
@@ -35,7 +35,7 @@ model UserInfo {
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  @@map("UserInfos")
+  @@map("UserInfo")
 }
 
 model RefreshToken {
@@ -47,7 +47,7 @@ model RefreshToken {
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  @@map("RefreshTokens")
+  @@map("RefreshToken")
 }
 
 model Resume {
