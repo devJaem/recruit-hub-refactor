@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-export default function (req, res, next) {
+export const requestLogger = (req, res, next) => {
   const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(
@@ -20,4 +20,4 @@ export default function (req, res, next) {
     );
   });
   next();
-}
+};

@@ -1,15 +1,10 @@
-import { RESUME_MESSAGES } from '../constants/resume.constant.js';
-
-const requireRoles = (roles) => {
+import { MESSAGES } from '../constants/message.constant.js';
+const requireRoles = (allowedRoles) => {
   return (req, res, next) => {
-    const userRole = req.user.userInfo.role;
-    const allowed = roles.includes(userRole);
-
+    const userRoles = req.user.role;
+    const allowed = allowedRoles.some((role) => userRoles.includes(role));
     if (!allowed) {
-      return res.status(403).json({
-        status: 403,
-        message: RESUME_MESSAGES.ACCESS_DENIED,
-      });
+      return res.status(403).json({ message: MESSAGES.AUTH.COMMON.FORBIDDEN });
     }
     next();
   };

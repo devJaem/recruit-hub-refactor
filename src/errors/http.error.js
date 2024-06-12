@@ -32,6 +32,12 @@ class NotFoundError extends HttpError {
   }
 }
 
+class ConflictError extends HttpError {
+  constructor(message = 'Conflict') {
+    super(HTTP_STATUS.CONFLICT, message);
+  }
+}
+
 class InternalServerError extends HttpError {
   constructor(message = 'Internal Server Error') {
     super(HTTP_STATUS.INTERNAL_SERVER_ERROR, message);
@@ -44,5 +50,6 @@ export {
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
+  ConflictError,
   InternalServerError
 };
