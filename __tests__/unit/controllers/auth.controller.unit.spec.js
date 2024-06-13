@@ -1,66 +1,114 @@
-import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { describe, test, expect, jest, beforeEach } from '@jest/globals';
+import AuthController from '../../../src/controllers/auth.controller.js'; 
+import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
+import { MESSAGES } from '../../../src/constants/message.constant.js';
+import { ConflictError, UnauthorizedError } from '../../../src/errors/http.error.js';
+import { dummyUsers } from '../../dummies/users.dummy.js'; 
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
-const mockTemplateService = {
-  create: jest.fn(),
-  readMany: jest.fn(),
-  readOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
+const mockAuthService = {
+  signUp: jest.fn(),
+  signIn: jest.fn(),
 };
 
-const mockRequest = {
-  user: jest.fn(),
-  body: jest.fn(),
-  query: jest.fn(),
-  params: jest.fn(),
-};
+let mockRequest;
+let mockResponse;
+let mockNext;
 
-const mockResponse = {
-  status: jest.fn(),
-  json: jest.fn(),
-};
+const authController = new AuthController(mockAuthService);
 
-const mockNext = jest.fn();
-
-const templateController = new TemplateController(mockTemplateService);
-
-describe('TemplateController Unit Test', () => {
+describe('AuthController 유닛 테스트', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
+    jest.resetAllMocks();
+    
+    mockRequest = {
+      body: {},
+    };
 
-    // mockResponse.status의 경우 메서드 체이닝으로 인해 반환값이 Response(자신: this)로 설정되어야합니다.
-    mockResponse.status.mockReturnValue(mockResponse);
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    mockNext = jest.fn();
   });
 
-  test('create Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+  test('회원가입 성공', async () => {
+    const createUser = {
+      email: 'newuser@example.com',
+      password: 'password123',
+      name: 'New User',
+    };
+    const mockUser = {
+      userId: 4,
+      email: 'newuser@example.com',
+      name: 'New User',
+      role: 'APPLICANT',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    mockRequest.body = createUser;
+    mockAuthService.signUp.mockResolvedValue(mockUser);
+
+    await authController.signUp(mockRequest, mockResponse, mockNext);
+
+    expect(mockAuthService.signUp).toHaveBeenCalledWith(createUser);
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      status: HTTP_STATUS.CREATED,
+      message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
+      data: mockUser,
+    });
   });
 
-  test('readMany Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+  test('회원가입 중복 에러', async () => {
+    const createUser = {
+      email: dummyUsers[0].email,
+      password: 'password123',
+      name: 'Existing User',
+    };
+    mockRequest.body = createUser;
+    mockAuthService.signUp.mockRejectedValue(new ConflictError(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED));
+
+    await authController.signUp(mockRequest, mockResponse, mockNext);
+
+    expect(mockAuthService.signUp).toHaveBeenCalledWith(createUser);
+    expect(mockNext).toHaveBeenCalledWith(new ConflictError(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED));
   });
 
-  test('readOne Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+  test('로그인 성공', async () => {
+    const loginUser = {
+      email: dummyUsers[0].email,
+      password: 'password123',
+    };
+    const tokens = {
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+    };
+    mockRequest.body = loginUser;
+    mockAuthService.signIn.mockResolvedValue(tokens);
+
+    await authController.signIn(mockRequest, mockResponse, mockNext);
+
+    expect(mockAuthService.signIn).toHaveBeenCalledWith(loginUser);
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
+      data: tokens,
+    });
   });
 
-  test('update Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+  test('로그인 실패 - 사용자 없음', async () => {
+    const loginUser = {
+      email: 'nonexistentuser@example.com',
+      password: 'password123',
+    };
+    mockRequest.body = loginUser;
+    mockAuthService.signIn.mockRejectedValue(new UnauthorizedError(MESSAGES.AUTH.COMMON.UNAUTHORIZED));
 
-  test('delete Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+    await authController.signIn(mockRequest, mockResponse, mockNext);
+
+    expect(mockAuthService.signIn).toHaveBeenCalledWith(loginUser);
+    expect(mockNext).toHaveBeenCalledWith(new UnauthorizedError(MESSAGES.AUTH.COMMON.UNAUTHORIZED));
   });
 });

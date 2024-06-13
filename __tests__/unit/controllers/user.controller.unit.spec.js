@@ -1,66 +1,85 @@
-import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { describe, test, expect, jest, beforeEach } from '@jest/globals';
+import UserController from '../../../src/controllers/user.controller.js';
+import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
+import { MESSAGES } from '../../../src/constants/message.constant.js';
+import { dummyUsers, dummyRefreshTokens } from '../../dummies/users.dummy.js'; 
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
-const mockTemplateService = {
-  create: jest.fn(),
-  readMany: jest.fn(),
-  readOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
+const mockUserService = {
+  getUserProfile: jest.fn(),
+  generateTokens: jest.fn(),
+  deleteToken: jest.fn(),
 };
 
-const mockRequest = {
-  user: jest.fn(),
-  body: jest.fn(),
-  query: jest.fn(),
-  params: jest.fn(),
-};
+let mockRequest;
+let mockResponse;
+let mockNext;
 
-const mockResponse = {
-  status: jest.fn(),
-  json: jest.fn(),
-};
+const userController = new UserController(mockUserService);
 
-const mockNext = jest.fn();
-
-const templateController = new TemplateController(mockTemplateService);
-
-describe('TemplateController Unit Test', () => {
+describe('UserController 유닛 테스트', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
+    jest.resetAllMocks();
 
-    // mockResponse.status의 경우 메서드 체이닝으로 인해 반환값이 Response(자신: this)로 설정되어야합니다.
-    mockResponse.status.mockReturnValue(mockResponse);
+    mockRequest = {
+      user: { userId: 1 },
+      body: {},
+      params: {},
+      query: {},
+    };
+
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    mockNext = jest.fn();
   });
 
-  test('create Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+  test('getProfile 성공', async () => {
+    const user = dummyUsers[0];
+    mockUserService.getUserProfile.mockResolvedValue(user);
+
+    await userController.getProfile(mockRequest, mockResponse, mockNext);
+
+    expect(mockUserService.getUserProfile).toHaveBeenCalledWith(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.USERS.READ_ME.SUCCEED,
+      data: user,
+    });
   });
 
-  test('readMany Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+  test('refreshToken 성공', async () => {
+    const tokens = {
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+    };
+    mockUserService.generateTokens.mockResolvedValue(tokens);
+
+    await userController.refreshToken(mockRequest, mockResponse, mockNext);
+
+    expect(mockUserService.generateTokens).toHaveBeenCalledWith(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.AUTH.TOKEN.SUCCEED,
+      data: tokens,
+    });
   });
 
-  test('readOne Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+  test('logout 성공', async () => {
+    const result = { success: true };
+    mockUserService.deleteToken.mockResolvedValue(result);
 
-  test('update Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+    await userController.logout(mockRequest, mockResponse, mockNext);
 
-  test('delete Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+    expect(mockUserService.deleteToken).toHaveBeenCalledWith(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.AUTH.SIGN_OUT.SUCCEED,
+      data: result,
+    });
   });
 });
