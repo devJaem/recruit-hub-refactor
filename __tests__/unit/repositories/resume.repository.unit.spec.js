@@ -20,12 +20,12 @@ const mockPrisma = {
 
 const resumeRepository = new ResumeRepository(mockPrisma);
 
-describe('ResumeRepository Unit Test', () => {
+describe('ResumeRepository 유닛 테스트', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test('createResume', async () => {
+  test('이력서 생성', async () => {
     // GIVEN
     const userId = dummyUsers[0].userId;
     const resumeData = {
@@ -54,7 +54,7 @@ describe('ResumeRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('createResumeLog', async () => {
+  test('이력서 로그 생성', async () => {
     // GIVEN
     const resumeId = dummyResumes[0].resumeId;
     const recruiterId = dummyUsers[2].userId;
@@ -87,7 +87,7 @@ describe('ResumeRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('getAllResumes', async () => {
+  test('모든 이력서 가져오기', async () => {
     // GIVEN
     const whereClause = {};
     const sortBy = 'createdAt';
@@ -118,7 +118,7 @@ describe('ResumeRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('getResumeDetail', async () => {
+  test('이력서 상세 정보 가져오기', async () => {
     // GIVEN
     const resumeId = dummyResumes[0].resumeId;
     const mockReturn = dummyResumes[0];
@@ -145,7 +145,7 @@ describe('ResumeRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('updateResume', async () => {
+  test('이력서 업데이트', async () => {
     // GIVEN
     const resumeId = dummyResumes[0].resumeId;
     const resumeData = {
@@ -182,7 +182,7 @@ describe('ResumeRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('deleteResume', async () => {
+  test('이력서 삭제', async () => {
     // GIVEN
     const resumeId = dummyResumes[0].resumeId;
     const mockReturn = dummyResumes[0];
@@ -200,7 +200,7 @@ describe('ResumeRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('getResumeLogs', async () => {
+  test('이력서 로그 가져오기', async () => {
     // GIVEN
     const resumeId = dummyResumes[0].resumeId;
     const mockReturn = dummyResumeLogs;

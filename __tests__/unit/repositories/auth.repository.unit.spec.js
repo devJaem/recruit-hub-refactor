@@ -15,12 +15,12 @@ const mockPrisma = {
 
 const authRepository = new AuthRepository(mockPrisma);
 
-describe('AuthRepository Unit Test', () => {
+describe('AuthRepository 유닛 테스트', () => {
   beforeEach(() => {
     jest.resetAllMocks(); 
   });
 
-  test('findRefreshTokenByUserId', async () => {
+  test('사용자 ID로 리프레시 토큰 찾기', async () => {
     // GIVEN
     const userId = dummyUsers[0].userId;
     const mockReturn = dummyRefreshTokens[0];
@@ -36,7 +36,7 @@ describe('AuthRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('updateOrCreateToken', async () => {
+  test('토큰 업데이트 또는 생성', async () => {
     // GIVEN
     const userId = dummyUsers[0].userId;
     const token = 'new-token';
@@ -61,7 +61,7 @@ describe('AuthRepository Unit Test', () => {
     expect(result).toEqual({ ...mockExistingToken, token });
   });
 
-  test('deleteTokenByUserId', async () => {
+  test('사용자 ID로 토큰 삭제', async () => {
     // GIVEN
     const userId = dummyUsers[2].userId;
     const mockExistingToken = dummyRefreshTokens[2];
@@ -81,7 +81,7 @@ describe('AuthRepository Unit Test', () => {
     expect(result).toEqual({ tokenId: mockExistingToken.tokenId });
   });
 
-  test('updateToken', async () => {
+  test('토큰 업데이트', async () => {
     // GIVEN
     const userId = dummyUsers[0].userId;
     const token = 'new-token';

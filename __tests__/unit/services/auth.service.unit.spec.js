@@ -1,55 +1,127 @@
-import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { beforeEach, describe, jest, test, expect } from '@jest/globals';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import AuthService from '../../../src/services/auth.service.js';
+import { dummyUsers } from '../../dummies/users.dummy.js';
+import { UnauthorizedError, ConflictError } from '../../../src/errors/http.error.js';
+import { MESSAGES } from '../../../src/constants/message.constant.js';
+import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from '../../../src/constants/auth.constant.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
-const mockTemplateRepository = {
-  create: jest.fn(),
-  readMany: jest.fn(),
-  readOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
+const mockAuthRepository = {
+  findRefreshTokenByUserId: jest.fn(),
+  updateOrCreateToken: jest.fn(),
+  deleteTokenByUserId: jest.fn(),
+  updateToken: jest.fn(),
 };
 
-const templateService = new TemplateService(mockTemplateRepository);
+const mockUserRepository = {
+  findById: jest.fn(),
+  findOne: jest.fn(),
+  createUser: jest.fn(),
+};
 
-describe('TemplateService Unit Test', () => {
+const authService = new AuthService(mockAuthRepository, mockUserRepository);
+
+describe('AuthService 유닛 테스트', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
+    jest.resetAllMocks(); // 매 테스트 전에 모든 모의를 초기화합니다.
   });
 
-  test('create Method', async () => {
+  test('회원가입 성공 케이스', async () => {
     // GIVEN
+    const createUser = {
+      email: 'newuser@example.com',
+      password: 'password123',
+      name: 'New User',
+    };
+    const mockCreatedUser = {
+      ...dummyUsers[0],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    mockUserRepository.findOne.mockResolvedValue(null);
+    mockUserRepository.createUser.mockResolvedValue(mockCreatedUser);
+    bcrypt.hash = jest.fn().mockResolvedValue('hashedPassword');
+
     // WHEN
+    const result = await authService.signUp(createUser);
+
     // THEN
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith(createUser.email);
+    expect(mockUserRepository.createUser).toHaveBeenCalledWith(
+      createUser.email,
+      'hashedPassword',
+      createUser.name
+    );
+    expect(result).toMatchObject({
+      userId: mockCreatedUser.userId,
+      email: mockCreatedUser.email,
+      name: mockCreatedUser.userInfo.name,
+      role: mockCreatedUser.userInfo.role,
+    });
   });
 
-  test('readMany Method', async () => {
+  test('회원가입 중복 에러 케이스', async () => {
     // GIVEN
-    // WHEN
-    // THEN
+    const createUser = {
+      email: 'existinguser@example.com',
+      password: 'password123',
+      name: 'Existing User',
+    };
+    mockUserRepository.findOne.mockResolvedValue(dummyUsers[0]);
+
+    // WHEN & THEN
+    await expect(authService.signUp(createUser)).rejects.toThrow(ConflictError);
+    await expect(authService.signUp(createUser)).rejects.toThrow(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
   });
 
-  test('readOne Method', async () => {
+  test('로그인 성공 케이스', async () => {
     // GIVEN
+    const loginUser = {
+      email: dummyUsers[0].email,
+      password: 'password123',
+    };
+    mockUserRepository.findOne.mockResolvedValue(dummyUsers[0]);
+    bcrypt.compare = jest.fn().mockResolvedValue(true);
+    jwt.sign = jest.fn().mockImplementation((payload, secret, options) => `mockedToken-${payload.userId}-${options.expiresIn}`);
+
     // WHEN
+    const result = await authService.signIn(loginUser);
+
     // THEN
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith(loginUser.email);
+    expect(bcrypt.compare).toHaveBeenCalledWith(loginUser.password, dummyUsers[0].password);
+    expect(mockAuthRepository.updateOrCreateToken).toHaveBeenCalledWith(dummyUsers[0].userId, expect.any(String));
+    expect(result).toEqual({
+      accessToken: `mockedToken-${dummyUsers[0].userId}-${ACCESS_TOKEN_EXPIRES_IN}`,
+      refreshToken: `mockedToken-${dummyUsers[0].userId}-${REFRESH_TOKEN_EXPIRES_IN}`,
+    });
   });
 
-  test('readOne Method - 이력서 없는 경우', async () => {
+  test('로그인 실패 케이스 - 사용자 없음', async () => {
     // GIVEN
-    // WHEN
-    // THEN
+    const loginUser = {
+      email: 'nonexistentuser@example.com',
+      password: 'password123',
+    };
+    mockUserRepository.findOne.mockResolvedValue(null);
+
+    // WHEN & THEN
+    await expect(authService.signIn(loginUser)).rejects.toThrow(UnauthorizedError);
+    await expect(authService.signIn(loginUser)).rejects.toThrow(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
   });
 
-  test('update Method', async () => {
+  test('로그인 실패 케이스 - 비밀번호 불일치', async () => {
     // GIVEN
-    // WHEN
-    // THEN
-  });
+    const loginUser = {
+      email: dummyUsers[0].email,
+      password: 'wrongpassword',
+    };
+    mockUserRepository.findOne.mockResolvedValue(dummyUsers[0]);
+    bcrypt.compare = jest.fn().mockResolvedValue(false);
 
-  test('delete Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+    // WHEN & THEN
+    await expect(authService.signIn(loginUser)).rejects.toThrow(UnauthorizedError);
+    await expect(authService.signIn(loginUser)).rejects.toThrow(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
   });
 });

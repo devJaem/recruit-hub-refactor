@@ -13,12 +13,12 @@ const mockPrisma = {
 
 const userRepository = new UserRepository(mockPrisma);
 
-describe('UserRepository Unit Test', () => {
+describe('UserRepository 유닛 테스트', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test('findById', async () => {
+  test('findById 메서드 테스트', async () => {
     // GIVEN
     const userId = dummyUsers[0].userId;
     const mockReturn = dummyUsers[0];
@@ -37,7 +37,7 @@ describe('UserRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('findOne', async () => {
+  test('findOne 메서드 테스트', async () => {
     // GIVEN
     const email = dummyUsers[0].email;
     const mockReturn = dummyUsers[0];
@@ -56,7 +56,7 @@ describe('UserRepository Unit Test', () => {
     expect(result).toEqual(mockReturn);
   });
 
-  test('createUser', async () => {
+  test('createUser 메서드 테스트', async () => {
     // GIVEN
     const email = 'newuser@example.com';
     const hashPassword = 'hashedPassword';
