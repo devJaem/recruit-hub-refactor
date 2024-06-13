@@ -24,7 +24,7 @@ const authService = new AuthService(mockAuthRepository, mockUserRepository);
 
 describe('AuthService 유닛 테스트', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 매 테스트 전에 모든 모의를 초기화합니다.
+    jest.resetAllMocks();
   });
 
   test('회원가입 성공 케이스', async () => {

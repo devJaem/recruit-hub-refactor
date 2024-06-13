@@ -3,7 +3,6 @@ import ResumeRepository from '../../../src/repositories/resume.repository.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 import { dummyResumes, dummyResumeLogs } from '../../dummies/resume.dummy.js';
 
-// Prisma 클라이언트 모킹
 const mockPrisma = {
   resume: {
     create: jest.fn(),

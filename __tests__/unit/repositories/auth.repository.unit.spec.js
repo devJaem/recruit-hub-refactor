@@ -2,7 +2,6 @@ import { beforeEach, describe, jest, test, expect } from '@jest/globals';
 import AuthRepository from '../../../src/repositories/auth.repository.js';
 import { dummyUsers, dummyRefreshTokens } from '../../dummies/users.dummy.js';
 
-// Prisma 클라이언트 모킹
 const mockPrisma = {
   refreshToken: {
     findFirst: jest.fn(),

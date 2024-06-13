@@ -2,7 +2,6 @@ import { beforeEach, describe, jest, test, expect } from '@jest/globals';
 import UserRepository from '../../../src/repositories/user.repository.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 
-// Prisma 클라이언트 모킹
 const mockPrisma = {
   user: {
     findUnique: jest.fn(),

@@ -4,7 +4,6 @@ import UserService from '../../../src/services/user.service.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from '../../../src/constants/auth.constant.js';
 
-// Mock repositories
 const mockUserRepository = {
   findById: jest.fn(),
 };
@@ -14,12 +13,11 @@ const mockAuthRepository = {
   deleteTokenByUserId: jest.fn(),
 };
 
-// Instantiate the service with the mocked repositories
 const userService = new UserService(mockUserRepository, mockAuthRepository);
 
 describe('UserService 유닛 테스트', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 매 테스트 전에 모든 모의를 초기화합니다.
+    jest.resetAllMocks();
   });
 
   test('getUserProfile 메서드 성공 케이스', async () => {
