@@ -24,7 +24,6 @@ class AuthController {
     try {
       const loginUser = req.body;
       const tokens = await this.authService.signIn(loginUser);
-      res.cookie('authorization', `Bearer ${tokens.accessToken}`);
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.AUTH.SIGN_IN.SUCCEED,

@@ -36,3 +36,27 @@ export const dummyUsers = [
     },
   },
 ];
+
+export const dummyRefreshTokens = [
+  {
+    tokenId: 1,
+    userId: 1,
+    token: 'sample-token-1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    tokenId: 2,
+    userId: 2,
+    token: 'sample-token-2',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    tokenId: 3,
+    userId: 3,
+    token: 'sample-token-3',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
