@@ -1,51 +1,105 @@
 import { beforeEach, describe, jest, test, expect } from '@jest/globals';
+import AuthRepository from '../../../src/repositories/auth.repository.js';
+import { dummyUsers, dummyRefreshTokens } from '../../dummies/users.dummy.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
+// Prisma 클라이언트 모킹
 const mockPrisma = {
-  template: {
+  refreshToken: {
+    findFirst: jest.fn(),
     create: jest.fn(),
-    findMany: jest.fn(),
-    findUnique: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    upsert: jest.fn(),
   },
 };
 
-const templateRepository = new TemplateRepository(mockPrisma);
+const authRepository = new AuthRepository(mockPrisma);
 
-describe('TemplateRepository Unit Test', () => {
+describe('AuthRepository Unit Test', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 모든 Mock을 초기화합니다
+    jest.resetAllMocks(); 
   });
 
-  test('create Method', async () => {
+  test('findRefreshTokenByUserId', async () => {
     // GIVEN
+    const userId = dummyUsers[0].userId;
+    const mockReturn = dummyRefreshTokens[0];
+    mockPrisma.refreshToken.findFirst.mockResolvedValue(mockReturn);
+
     // WHEN
+    const result = await authRepository.findRefreshTokenByUserId(userId);
+
     // THEN
+    expect(mockPrisma.refreshToken.findFirst).toHaveBeenCalledWith({
+      where: { userId },
+    });
+    expect(result).toEqual(mockReturn);
   });
 
-  test('readMany Method', async () => {
+  test('updateOrCreateToken', async () => {
     // GIVEN
+    const userId = dummyUsers[0].userId;
+    const token = 'new-token';
+    const mockExistingToken = dummyRefreshTokens[0];
+    mockPrisma.refreshToken.findFirst.mockResolvedValue(mockExistingToken);
+    mockPrisma.refreshToken.update.mockResolvedValue({
+      ...mockExistingToken,
+      token,
+    });
+
     // WHEN
+    const result = await authRepository.updateOrCreateToken(userId, token);
+
     // THEN
+    expect(mockPrisma.refreshToken.findFirst).toHaveBeenCalledWith({
+      where: { userId },
+    });
+    expect(mockPrisma.refreshToken.update).toHaveBeenCalledWith({
+      where: { tokenId: mockExistingToken.tokenId },
+      data: { token },
+    });
+    expect(result).toEqual({ ...mockExistingToken, token });
   });
 
-  test('readOne Method', async () => {
+  test('deleteTokenByUserId', async () => {
     // GIVEN
+    const userId = dummyUsers[2].userId;
+    const mockExistingToken = dummyRefreshTokens[2];
+    mockPrisma.refreshToken.findFirst.mockResolvedValue(mockExistingToken);
+    mockPrisma.refreshToken.delete.mockResolvedValue(mockExistingToken);
+
     // WHEN
+    const result = await authRepository.deleteTokenByUserId(userId);
+
     // THEN
+    expect(mockPrisma.refreshToken.findFirst).toHaveBeenCalledWith({
+      where: { userId },
+    });
+    expect(mockPrisma.refreshToken.delete).toHaveBeenCalledWith({
+      where: { tokenId: mockExistingToken.tokenId },
+    });
+    expect(result).toEqual({ tokenId: mockExistingToken.tokenId });
   });
 
-  test('update Method', async () => {
+  test('updateToken', async () => {
     // GIVEN
-    // WHEN
-    // THEN
-  });
+    const userId = dummyUsers[0].userId;
+    const token = 'new-token';
+    const mockReturn = {
+      ...dummyRefreshTokens[0],
+      token,
+    };
+    mockPrisma.refreshToken.upsert.mockResolvedValue(mockReturn);
 
-  test('delete Method', async () => {
-    // GIVEN
     // WHEN
+    const result = await authRepository.updateToken(userId, token);
+
     // THEN
+    expect(mockPrisma.refreshToken.upsert).toHaveBeenCalledWith({
+      where: { userId },
+      update: { token },
+      create: { userId, token },
+    });
+    expect(result).toEqual(mockReturn);
   });
 });
